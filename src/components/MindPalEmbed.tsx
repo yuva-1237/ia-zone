@@ -51,13 +51,29 @@ const MindPalEmbed = ({ slug, type, conversationId, workflowRunId }: MindPalEmbe
   }, [iframeId, user?.id, profile?.full_name, domain]);
 
   return (
-    <div ref={containerRef} className="w-full flex-1">
-      <iframe
-        id={iframeId}
-        src={src}
-        allow="clipboard-read; clipboard-write; microphone"
-        className="h-full min-h-[700px] w-full rounded-lg border border-border"
-      />
+    <div ref={containerRef} className="flex w-full flex-1 flex-col">
+      <div className="relative overflow-hidden rounded-xl border border-border bg-background">
+        <iframe
+          id={iframeId}
+          src={src}
+          allow="clipboard-read; clipboard-write; microphone"
+          className="h-full min-h-[700px] w-full border-none"
+        />
+        {/* Attribution Mask & Custom Branding */}
+        <div className="absolute bottom-0 left-0 right-0 flex h-14 items-center justify-center border-t border-border bg-background z-20">
+          <div className="text-sm text-muted-foreground">
+            Created by{" "}
+            <a
+              href="https://linktr.ee/Yuvathilagan"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-foreground transition-colors hover:text-primary hover:underline"
+            >
+              yuvathilagan
+            </a>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

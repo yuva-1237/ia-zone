@@ -5,6 +5,7 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Moon, Sun, LogOut, User, History, Sparkles, Globe, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
@@ -19,13 +20,16 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-lg">
+    <nav className="sticky top-0 z-50 glass border-b border-white/5">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg gradient-primary">
+          <motion.div 
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            className="flex h-9 w-9 items-center justify-center rounded-lg gradient-primary shadow-glow"
+          >
             <Sparkles className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <span className="font-display text-xl font-bold text-foreground">YUVA AI</span>
+          </motion.div>
+          <span className="font-display text-xl font-bold gradient-text">YUVA AI</span>
         </Link>
 
         {/* Desktop */}

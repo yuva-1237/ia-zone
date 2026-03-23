@@ -8,6 +8,7 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import Navbar from "@/components/Navbar";
 import OnboardingModal from "@/components/OnboardingModal";
+import Robot3D from "@/components/Robot3D";
 import Index from "./pages/Index";
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -22,7 +23,8 @@ const AppContent = () => {
   const showOnboarding = !loading && user && profile && !profile.onboarding_completed;
 
   return (
-    <>
+    <div className="relative min-h-screen">
+      <Robot3D />
       <Navbar />
       {showOnboarding && <OnboardingModal />}
       <Routes>
@@ -33,7 +35,7 @@ const AppContent = () => {
         <Route path="/tool/advanced-generalist-ai-assistant" element={<ChatbotPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-    </>
+    </div>
   );
 };
 
