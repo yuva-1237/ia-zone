@@ -1,0 +1,83 @@
+import { useEffect, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Play } from "lucide-react";
+
+interface ToolRun {
+  id: string;
+  tool_id: string;
+  tool_name: string;
+  tool_type: string;
+  run_id: string;
+  created_at: string;
+}
+
+const toolPageMap: Record<string, string> = {
+  "69c156f9877ca00f73732590": "/tool/advanced-generalist-ai-assistant",
+};
+
+const HistoryPage = () => {
+  const { user, loading } = useAuth();
+  const { t } = useLanguage();
+  const navigate = useNavigate();
+  const [runs, setRuns] = useState<ToolRun[]>([]);
+  const [fetching, setFetching] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("tool_runs")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .then(({ data }) => {
+        setRuns((data as ToolRun[]) || []);
+        setFetching(false);
+      });
+  }, [user]);
+
+  if (!loading && !user) return <Navigate to="/login" replace />;
+
+  const handleResume = (run: ToolRun) => {
+    const basePath = toolPageMap[run.tool_id] || "/";
+    if (run.tool_type === "chatbot") {
+      navigate(`${basePath}?ccid=${run.run_id}`);
+    } else {
+      navigate(`${basePath}?wrid=${run.run_id}`);
+    }
+  };
+
+  return (
+    <div className="container mx-auto max-w-3xl px-4 py-12">
+      <h1 className="font-display text-3xl font-bold text-foreground">{t("history.title")}</h1>
+      {fetching ? (
+        <p className="mt-8 text-muted-foreground">Loading...</p>
+      ) : runs.length === 0 ? (
+        <p className="mt-8 text-muted-foreground">{t("history.empty")}</p>
+      ) : (
+        <div className="mt-8 space-y-3">
+          {runs.map((run) => (
+            <div key={run.id} className="flex items-center justify-between rounded-lg border border-border bg-card p-4 card-shadow">
+              <div>
+                <p className="font-medium text-card-foreground">{run.tool_name || "AI Tool"}</p>
+                <div className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
+                  <Badge variant="secondary" className="text-xs">{run.tool_type}</Badge>
+                  <span>{new Date(run.created_at).toLocaleString()}</span>
+                </div>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => handleResume(run)}>
+                <Play className="mr-1 h-3 w-3" />
+                {t("history.resume")}
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default HistoryPage;
