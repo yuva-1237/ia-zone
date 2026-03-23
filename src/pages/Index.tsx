@@ -1,16 +1,36 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useLanguage } from "@/contexts/LanguageContext";
+import ToolCard from "@/components/ToolCard";
+import { MessageSquare } from "lucide-react";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+const tools = [
+  {
+    name: "Advanced Generalist AI Assistant",
+    description: "A powerful AI chatbot that can help with any task — writing, research, coding, brainstorming, and more.",
+    path: "/tool/advanced-generalist-ai-assistant",
+    icon: <MessageSquare className="h-6 w-6" />,
+  },
+];
+
+const Index = () => {
+  const { t } = useLanguage();
+
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
+    <div className="container mx-auto px-4 py-12">
+      <div className="mb-12 text-center">
+        <h1 className="font-display text-4xl font-bold gradient-text sm:text-5xl">
+          {t("tools.title")}
+        </h1>
+        <p className="mt-4 text-lg text-muted-foreground">
+          {t("tools.subtitle")}
+        </p>
+      </div>
+      <div className="mx-auto grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {tools.map((tool) => (
+          <ToolCard key={tool.path} {...tool} />
+        ))}
+      </div>
     </div>
   );
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;
