@@ -2,8 +2,8 @@ import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
 
-export const RobotSVG = ({ isDark, className }: { isDark: boolean; className?: string }) => (
-  <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className={`drop-shadow-2xl ${className}`}>
+export const RobotSVG = ({ isDark, className, style }: { isDark: boolean; className?: string; style?: React.CSSProperties }) => (
+  <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className={`drop-shadow-2xl ${className}`} style={style}>
     {/* Body */}
     <motion.path
       d="M60 100C60 77.9086 77.9086 60 100 60C122.091 60 140 77.9086 140 100V140C140 151.046 131.046 160 120 160H80C68.9543 160 60 151.046 60 140V100Z"
@@ -52,6 +52,56 @@ export const RobotSVG = ({ isDark, className }: { isDark: boolean; className?: s
   </svg>
 );
 
+const RobotInstance = ({ bot, mousePos, yPos, isDark }: { 
+  bot: any; 
+  mousePos: { x: number; y: number }; 
+  yPos: any; 
+  isDark: boolean 
+}) => {
+  const adjustedY = useTransform(yPos, (value: number) => value * bot.yFactor);
+  
+  return (
+    <motion.div
+      style={{ 
+        x: mousePos.x * bot.xRatio, 
+        y: adjustedY,
+        top: bot.top,
+        bottom: bot.bottom,
+        left: bot.left,
+        right: bot.right,
+      }}
+      initial={{ opacity: 0, scale: bot.scale * 0.8 }}
+      animate={{ opacity: bot.opacity, scale: bot.scale }}
+      transition={{ duration: 2, delay: bot.id === 'main-right' ? 0 : Math.random() }}
+      className="absolute hidden md:block"
+    >
+      <motion.div
+        animate={{
+          y: [0, 20, 0],
+          rotate: bot.rotate,
+        }}
+        transition={{
+          duration: bot.duration,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+        className="relative"
+        style={{ 
+          filter: `grayscale(${bot.grayscale})`,
+          opacity: bot.opacity
+        }}
+      >
+        <RobotSVG isDark={isDark} style={{ width: 200 * bot.scale, height: 'auto' }} />
+        
+        {/* Glow beneath robot */}
+        <div className={`absolute -bottom-10 left-1/2 -z-10 h-10 w-20 -translate-x-1/2 rounded-full blur-2xl ${isDark ? 'bg-primary/20' : 'bg-primary/30'}`} 
+          style={{ opacity: bot.opacity * 0.5 }}
+        />
+      </motion.div>
+    </motion.div>
+  );
+};
+
 const Robot3D = () => {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -80,57 +130,16 @@ const Robot3D = () => {
       
       {/* Background Robots Swarm */}
       {[
-        { id: 'main-right', x: mousePos.x, y: yPos, scale: 1, opacity: 1, top: "15%", right: "5%", lgRight: "15%", lgTop: "20%", rotate: [0, 2, -2, 0], duration: 5, grayscale: 0 },
-        { id: 'bg-left-1', x: -mousePos.x * 0.4, y: yPos * 1.1, scale: 0.7, opacity: 0.4, top: "35%", left: "8%", lgLeft: "12%", rotate: [0, -3, 3, 0], duration: 7, grayscale: 0.5 },
-        { id: 'bg-right-bottom', x: mousePos.x * 0.2, y: yPos * 0.8, scale: 0.5, opacity: 0.2, bottom: "10%", right: "20%", rotate: [0, 5, -5, 0], duration: 8, grayscale: 0.8 },
-        { id: 'bg-left-top', x: -mousePos.x * 0.6, y: yPos * 1.2, scale: 0.4, opacity: 0.15, top: "10%", left: "25%", rotate: [0, 2, -2, 0], duration: 6, grayscale: 0.9 },
-        { id: 'bg-center-bottom', x: mousePos.x * 0.1, y: yPos * 0.9, scale: 0.3, opacity: 0.1, bottom: "25%", left: "45%", rotate: [0, -4, 4, 0], duration: 10, grayscale: 1 },
+        { id: 'main-right', xRatio: 1, yFactor: 1, scale: 1, opacity: 1, top: "15%", right: "5%", lgRight: "15%", lgTop: "20%", rotate: [0, 2, -2, 0], duration: 5, grayscale: 0 },
+        { id: 'bg-left-1', xRatio: -0.4, yFactor: 1.1, scale: 0.7, opacity: 0.4, top: "35%", left: "8%", lgLeft: "12%", rotate: [0, -3, 3, 0], duration: 7, grayscale: 0.5 },
+        { id: 'bg-right-bottom', xRatio: 0.2, yFactor: 0.8, scale: 0.5, opacity: 0.2, bottom: "10%", right: "20%", rotate: [0, 5, -5, 0], duration: 8, grayscale: 0.8 },
+        { id: 'bg-left-top', xRatio: -0.6, yFactor: 1.2, scale: 0.4, opacity: 0.15, top: "10%", left: "25%", rotate: [0, 2, -2, 0], duration: 6, grayscale: 0.9 },
+        { id: 'bg-center-bottom', xRatio: 0.1, yFactor: 0.9, scale: 0.3, opacity: 0.1, bottom: "25%", left: "45%", rotate: [0, -4, 4, 0], duration: 10, grayscale: 1 },
       ].map((bot) => (
-        <motion.div
-          key={bot.id}
-          style={{ 
-            x: bot.x, 
-            y: bot.y,
-          }}
-          initial={{ opacity: 0, scale: bot.scale * 0.8 }}
-          animate={{ opacity: bot.opacity, scale: bot.scale }}
-          transition={{ duration: 2, delay: bot.id === 'main-right' ? 0 : Math.random() }}
-          className={`absolute ${bot.top ? `top-[${bot.top}]` : ''} ${bot.bottom ? `bottom-[${bot.bottom}]` : ''} ${bot.right ? `right-[${bot.right}]` : ''} ${bot.left ? `left-[${bot.left}]` : ''} ${bot.lgRight ? `lg:right-[${bot.lgRight}]` : ''} ${bot.lgTop ? `lg:top-[${bot.lgTop}]` : ''} ${bot.lgLeft ? `lg:left-[${bot.lgLeft}]` : ''} hidden md:block`}
-          // Fallback for classes that might not be parsed correctly by Tailwind if dynamic
-          style={{
-            ...((bot as any).x && { x: bot.x }),
-            ...((bot as any).y && { y: bot.y }),
-            top: bot.top,
-            bottom: bot.bottom,
-            left: bot.left,
-            right: bot.right,
-          }}
-        >
-          <motion.div
-            animate={{
-              y: [0, 20, 0],
-              rotate: bot.rotate,
-            }}
-            transition={{
-              duration: bot.duration,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-            className="relative"
-            style={{ 
-              filter: `grayscale(${bot.grayscale})`,
-              opacity: bot.opacity
-            }}
-          >
-            <RobotSVG isDark={isDark} className={`w-[${200 * bot.scale}px] h-auto`} />
-            
-            {/* Glow beneath robot */}
-            <div className={`absolute -bottom-10 left-1/2 -z-10 h-10 w-20 -translate-x-1/2 rounded-full blur-2xl ${isDark ? 'bg-primary/20' : 'bg-primary/30'}`} 
-              style={{ opacity: bot.opacity * 0.5 }}
-            />
-          </motion.div>
-        </motion.div>
+        <RobotInstance key={bot.id} bot={bot} mousePos={mousePos} yPos={yPos} isDark={isDark} />
       ))}
+
+      {/* Futuristic Grid / Scanlines */}
 
       {/* Futuristic Grid / Scanlines */}
       <div 
