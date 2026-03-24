@@ -27,7 +27,7 @@ YUVA AI HUB solves these problems by providing:
 
 - **Advanced Generalist AI**: A versatile chatbot capable of complex reasoning, coding assistance, and creative writing.
 
-- **STAY TUNED FOR MORE UPDATES**
+## STAY TUNED FOR MORE UPDATES
 
 - **Interactive 3D Robot Mascot**: A persistent, floating SVG-based robot assistant that reacts to user interaction and scroll position.
 - **Adaptive Multi-Theme System**: Seamlessly switch between a sleek "Space Dark" mode and a clean "Modern Light" mode.
