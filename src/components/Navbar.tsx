@@ -20,7 +20,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 glass border-b border-white/5">
+    <nav className="sticky top-0 z-50 glass border-b border-white/10 dark:border-white/15">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2">
           <motion.div 

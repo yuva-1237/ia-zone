@@ -30,7 +30,7 @@ const ToolCard = ({ name, description, path, icon }: ToolCardProps) => {
         </div>
       </div>
       <h3 className="font-display text-xl font-bold neon-glow">{name}</h3>
-      <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{description}</p>
+      <p className="mt-3 text-muted-foreground/90 leading-relaxed dark:text-foreground/80">{description}</p>
       <Link to={path} className="mt-6 inline-block">
         <Button variant="ghost" size="sm" className="group/btn gap-2 px-0 text-primary hover:text-primary hover:bg-transparent">
           <span className="font-semibold">{t("tools.explore")}</span>

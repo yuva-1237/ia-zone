@@ -23,7 +23,7 @@ const Index = () => {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="mb-20 text-center"
       >
-        <h1 className="font-display text-5xl font-black gradient-text sm:text-7xl lg:text-8xl tracking-tighter">
+        <h1 className="font-display text-5xl font-black gradient-text sm:text-7xl lg:text-8xl tracking-tighter neon-glow">
           {t("tools.title")}
         </h1>
         <p className="mt-6 mx-auto max-w-2xl text-xl text-muted-foreground/80 leading-relaxed lg:text-2xl">

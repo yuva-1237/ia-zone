@@ -13,21 +13,21 @@ const RobotSVG = ({ isDark }: { isDark: boolean }) => (
     />
     {/* Head/Face Area */}
     <rect x="75" y="85" width="50" height="30" rx="10" 
-      fill={isDark ? "#0A0A0F" : "#F8FAFC"} 
-      stroke="#8B5CF6" 
-      strokeWidth="0.5" 
+      fill={isDark ? "#0D0D15" : "#F8FAFC"} 
+      stroke="#A855F7" 
+      strokeWidth="1" 
     />
     {/* Eyes */}
     <motion.circle
-      cx="90" cy="100" r="3"
-      fill="#2DD4BF"
-      animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
+      cx="90" cy="100" r="3.5"
+      fill="#4ADE80"
+      animate={{ scale: [1, 1.4, 1], opacity: [0.6, 1, 0.6] }}
       transition={{ duration: 2, repeat: Infinity }}
     />
     <motion.circle
-      cx="110" cy="100" r="3"
-      fill="#2DD4BF"
-      animate={{ scale: [1, 1.5, 1], opacity: [0.5, 1, 0.5] }}
+      cx="110" cy="100" r="3.5"
+      fill="#4ADE80"
+      animate={{ scale: [1, 1.4, 1], opacity: [0.6, 1, 0.6] }}
       transition={{ duration: 2, repeat: Infinity, delay: 0.2 }}
     />
     {/* Antennas */}
