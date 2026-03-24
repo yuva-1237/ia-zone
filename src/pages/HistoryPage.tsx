@@ -7,6 +7,17 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Play, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface ToolRun {
   id: string;
@@ -33,6 +44,7 @@ const HistoryPage = () => {
     supabase
       .from("tool_runs")
       .select("*")
+      .eq("is_deleted", false)
       .order("created_at", { ascending: false })
       .then(({ data }) => {
         setRuns((data as ToolRun[]) || []);
@@ -52,7 +64,10 @@ const HistoryPage = () => {
   };
 
   const handleDelete = async (id: string) => {
-    const { error } = await supabase.from("tool_runs").delete().eq("id", id);
+    const { error } = await supabase
+      .from("tool_runs")
+      .update({ is_deleted: true })
+      .eq("id", id);
     if (error) {
       toast.error("Failed to delete history");
     } else {
@@ -84,9 +99,27 @@ const HistoryPage = () => {
                   <Play className="mr-1 h-3 w-3" />
                   {t("history.resume")}
                 </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(run.id)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        This will permanently delete this chat from your history.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleDelete(run.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
             </div>
           ))}

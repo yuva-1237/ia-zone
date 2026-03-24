@@ -29,11 +29,12 @@ Deno.serve(async (req) => {
     // Deduplication check
     const { data: existing } = await supabase
       .from("tool_runs")
-      .select("id")
+      .select("id, is_deleted")
       .eq("run_id", conversationId)
       .maybeSingle();
 
     if (existing) {
+      // If it exists but was deleted, we stay quiet
       return new Response(JSON.stringify({ message: "Already recorded" }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -45,6 +46,7 @@ Deno.serve(async (req) => {
       tool_name: chatbotName || "AI Chatbot",
       tool_type: "chatbot",
       run_id: conversationId,
+      is_deleted: false,
     });
 
     if (error) throw error;

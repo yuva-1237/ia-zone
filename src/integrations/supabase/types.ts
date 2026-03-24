@@ -50,6 +50,7 @@ export type Database = {
           tool_name: string
           tool_type: string
           user_id: string
+          is_deleted: boolean
         }
         Insert: {
           created_at?: string
@@ -59,6 +60,7 @@ export type Database = {
           tool_name?: string
           tool_type: string
           user_id: string
+          is_deleted?: boolean
         }
         Update: {
           created_at?: string
@@ -68,6 +70,7 @@ export type Database = {
           tool_name?: string
           tool_type?: string
           user_id?: string
+          is_deleted?: boolean
         }
         Relationships: []
       }
