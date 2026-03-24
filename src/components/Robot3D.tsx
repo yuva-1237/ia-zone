@@ -135,6 +135,10 @@ const Robot3D = () => {
         { id: 'bg-right-bottom', xRatio: 0.2, yFactor: 0.8, scale: 0.5, opacity: 0.2, bottom: "10%", right: "20%", rotate: [0, 5, -5, 0], duration: 8, grayscale: 0.8 },
         { id: 'bg-left-top', xRatio: -0.6, yFactor: 1.2, scale: 0.4, opacity: 0.15, top: "10%", left: "25%", rotate: [0, 2, -2, 0], duration: 6, grayscale: 0.9 },
         { id: 'bg-center-bottom', xRatio: 0.1, yFactor: 0.9, scale: 0.3, opacity: 0.1, bottom: "25%", left: "45%", rotate: [0, -4, 4, 0], duration: 10, grayscale: 1 },
+        { id: 'bg-right-top', xRatio: 0.8, yFactor: 1.3, scale: 0.35, opacity: 0.25, top: "5%", right: "30%", rotate: [0, 4, -4, 0], duration: 9, grayscale: 0.7 },
+        { id: 'bg-left-mid', xRatio: -0.8, yFactor: 0.7, scale: 0.45, opacity: 0.18, top: "60%", left: "15%", rotate: [0, -2, 2, 0], duration: 6.5, grayscale: 0.85 },
+        { id: 'bg-far-right', xRatio: 1.5, yFactor: 1.1, scale: 0.25, opacity: 0.1, top: "45%", right: "8%", rotate: [0, 6, -6, 0], duration: 11, grayscale: 0.95 },
+        { id: 'bg-center-top', xRatio: -0.2, yFactor: 1.4, scale: 0.2, opacity: 0.08, top: "18%", left: "40%", rotate: [0, -5, 5, 0], duration: 12, grayscale: 1 },
       ].map((bot) => (
         <RobotInstance key={bot.id} bot={bot} mousePos={mousePos} yPos={yPos} isDark={isDark} />
       ))}
