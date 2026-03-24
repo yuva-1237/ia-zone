@@ -5,7 +5,8 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Play } from "lucide-react";
+import { Play, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface ToolRun {
   id: string;
@@ -50,6 +51,16 @@ const HistoryPage = () => {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    const { error } = await supabase.from("tool_runs").delete().eq("id", id);
+    if (error) {
+      toast.error("Failed to delete history");
+    } else {
+      setRuns(runs.filter((r) => r.id !== id));
+      toast.success("History deleted");
+    }
+  };
+
   return (
     <div className="container mx-auto max-w-3xl px-4 py-12">
       <h1 className="font-display text-3xl font-bold text-foreground">{t("history.title")}</h1>
@@ -68,10 +79,15 @@ const HistoryPage = () => {
                   <span>{new Date(run.created_at).toLocaleString()}</span>
                 </div>
               </div>
-              <Button variant="outline" size="sm" onClick={() => handleResume(run)}>
-                <Play className="mr-1 h-3 w-3" />
-                {t("history.resume")}
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button variant="outline" size="sm" onClick={() => handleResume(run)}>
+                  <Play className="mr-1 h-3 w-3" />
+                  {t("history.resume")}
+                </Button>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(run.id)}>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           ))}
         </div>
