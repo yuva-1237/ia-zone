@@ -41,15 +41,40 @@ const HistoryPage = () => {
 
   useEffect(() => {
     if (!user) return;
-    supabase
-      .from("tool_runs")
-      .select("*")
-      .eq("is_deleted", false)
-      .order("created_at", { ascending: false })
-      .then(({ data }) => {
-        setRuns((data as ToolRun[]) || []);
-        setFetching(false);
-      });
+
+    // Initial fetch
+    const fetchRuns = async () => {
+      const { data } = await supabase
+        .from("tool_runs")
+        .select("*")
+        .eq("is_deleted", false)
+        .order("created_at", { ascending: false });
+      setRuns((data as ToolRun[]) || []);
+      setFetching(false);
+    };
+
+    fetchRuns();
+
+    // Subscribe to real-time changes
+    const channel = supabase
+      .channel("history_changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "tool_runs",
+          filter: `user_id=eq.${user.id}`,
+        },
+        () => {
+          fetchRuns();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   if (!loading && !user) return <Navigate to="/login" replace />;

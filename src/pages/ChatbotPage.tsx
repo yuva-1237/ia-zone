@@ -9,27 +9,8 @@ const ChatbotPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const ccid = searchParams.get("ccid");
 
-  useEffect(() => {
-    if (!loading && user && !ccid) {
-      const newCcid = crypto.randomUUID();
-      
-      // Save to history immediately so it's tracked
-      supabase
-        .from("tool_runs")
-        .insert({
-          user_id: user.id,
-          tool_id: "69c156f9877ca00f73732590", // Advanced Generalist AI Assistant ID
-          tool_name: "Advanced Generalist AI Assistant",
-          tool_type: "chatbot",
-          run_id: newCcid,
-        })
-        .then(({ error }) => {
-          if (!error) {
-            setSearchParams({ ccid: newCcid });
-          }
-        });
-    }
-  }, [loading, user, ccid, setSearchParams]);
+  // No pre-saving "fake" runs anymore as per user request.
+  // We will rely on real-time event capture or the webhook.
 
   if (!loading && !user) return <Navigate to="/login" replace />;
   if (loading) return <div className="flex min-h-[50vh] items-center justify-center text-muted-foreground">Loading...</div>;

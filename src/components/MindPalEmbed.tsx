@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import { supabase } from "@/integrations/supabase/client";
 
 interface MindPalEmbedProps {
   slug: string;
@@ -46,11 +47,39 @@ const MindPalEmbed = ({ slug, type, conversationId, workflowRunId }: MindPalEmbe
     script.setAttribute("data-target", iframeId);
     document.body.appendChild(script);
 
+    const handleMessage = (event: MessageEvent) => {
+      // MindPal sends various events through postMessage
+      if (event.origin.includes("getmindpal.com")) {
+        console.log("MindPal Event:", event.data);
+        const { type: eventType, conversationId: cid, chatbotId, chatbotName } = event.data;
+
+        // If a session starts or a message is sent, ensure it's in our DB
+        if ((eventType === "mindpal:session_started" || eventType === "mindpal:message_sent") && cid && user?.id) {
+          supabase
+            .from("tool_runs")
+            .upsert({
+              user_id: user.id,
+              tool_id: chatbotId || "69c156f9877ca00f73732590",
+              tool_name: chatbotName || "Advanced Generalist AI Assistant",
+              tool_type: "chatbot",
+              run_id: cid,
+              is_deleted: false,
+            }, { onConflict: "run_id" })
+            .then(({ error }) => {
+              if (error) console.error("Error saving real-time history:", error);
+            });
+        }
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+
     return () => {
+      window.removeEventListener("message", handleMessage);
       const s = document.querySelector(`script[data-target="${iframeId}"]`);
       if (s) s.remove();
     };
-  }, [iframeId, user?.id, profile?.full_name, domain]);
+  }, [iframeId, user?.id, profile?.full_name, domain, conversationId]);
 
   return (
     <div ref={containerRef} className="flex w-full flex-1 flex-col">
