@@ -3,7 +3,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
-import { Moon, Sun, LogOut, User, History, Sparkles, Globe, Menu, X } from "lucide-react";
+import { Moon, Sun, LogOut, User, History, Globe, Menu, X } from "lucide-react";
+import { RobotSVG } from "./Robot3D";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -25,9 +26,9 @@ const Navbar = () => {
         <Link to="/" className="flex items-center gap-2">
           <motion.div 
             whileHover={{ scale: 1.1, rotate: 5 }}
-            className="flex h-9 w-9 items-center justify-center rounded-lg gradient-primary shadow-glow"
+            className="flex h-10 w-10 items-center justify-center rounded-lg overflow-hidden"
           >
-            <Sparkles className="h-5 w-5 text-primary-foreground" />
+            <RobotSVG isDark={theme === "dark"} className="h-12 w-12 scale-150" />
           </motion.div>
           <span className="font-display text-xl font-bold gradient-text">YUVA AI</span>
         </Link>
