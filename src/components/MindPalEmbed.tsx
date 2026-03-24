@@ -29,6 +29,8 @@ const MindPalEmbed = ({ slug, type, conversationId, workflowRunId }: MindPalEmbe
       ...(window as any).mindpalIframeConfig,
       [iframeId]: {
         customUserId: user?.id || "",
+        conversationId: conversationId || "",
+        workflowRunId: workflowRunId || "",
         customSessionContext: {
           full_name: profile?.full_name || "",
         },
