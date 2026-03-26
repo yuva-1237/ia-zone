@@ -91,7 +91,7 @@ const HistoryPage = () => {
   const handleDelete = async (id: string) => {
     const { error } = await supabase
       .from("tool_runs")
-      .update({ is_deleted: true })
+      .delete()
       .eq("id", id);
     if (error) {
       toast.error("Failed to delete history");
