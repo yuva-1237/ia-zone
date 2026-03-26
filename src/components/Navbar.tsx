@@ -30,7 +30,7 @@ const Navbar = () => {
           >
             <RobotSVG isDark={theme === "dark"} className="h-12 w-12 scale-150" />
           </motion.div>
-          <span className="font-display text-xl font-bold gradient-text">YUVA AI</span>
+          <span className="font-display text-xl font-bold gradient-text"><span className="font-display text-xl font-bold gradient-text">IA ZONE</span></span>
         </Link>
 
         {/* Desktop */}

@@ -54,7 +54,7 @@ const translations: Record<string, Record<string, string>> = {
     "history.title": "இயக்க வரலாறு",
     "history.resume": "தொடர்க",
     "history.empty": "இன்னும் கருவி இயக்கங்கள் இல்லை. உங்கள் வரலாற்றைக் காண கருவிகளைப் பயன்படுத்தத் தொடங்குங்கள்!",
-    "onboarding.title": "YUVA AI-க்கு வரவேற்கிறோம்!",
+    "onboarding.title": "IA ZONE-க்கு வரவேற்கிறோம்!",
     "onboarding.subtitle": "தொடங்க உங்கள் சுயவிவரத்தை அமைக்கலாம்",
     "onboarding.continue": "தொடங்கு",
     "usage.runs": "இந்த மாதம் இயக்கங்கள்",
