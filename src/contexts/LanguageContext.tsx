@@ -7,7 +7,7 @@ const translations: Record<string, Record<string, string>> = {
     "nav.profile": "Profile",
     "nav.login": "Login",
     "nav.logout": "Logout",
-    "tools.title": "AI HUB",
+    "tools.title": "IA ZONE",
     "tools.subtitle": "Powerful AI assistants to supercharge your learning",
     "tools.explore": "Explore Tool",
     "login.title": "Welcome Back",
