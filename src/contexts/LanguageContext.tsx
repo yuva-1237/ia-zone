@@ -25,7 +25,7 @@ const translations: Record<string, Record<string, string>> = {
     "history.title": "Run History",
     "history.resume": "Resume",
     "history.empty": "No tool runs yet. Start using tools to see your history!",
-    "onboarding.title": "Welcome to YUVA AI!",
+    "onboarding.title": "Welcome to IA ZONE!",
     "onboarding.subtitle": "Let's set up your profile to get started",
     "onboarding.continue": "Get Started",
     "usage.runs": "runs this month",
