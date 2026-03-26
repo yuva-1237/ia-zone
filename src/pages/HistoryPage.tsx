@@ -47,7 +47,7 @@ const HistoryPage = () => {
       const { data } = await supabase
         .from("tool_runs")
         .select("*")
-        .eq("is_deleted", false)
+        .eq("user_id", user.id)
         .order("created_at", { ascending: false });
       setRuns((data as ToolRun[]) || []);
       setFetching(false);
