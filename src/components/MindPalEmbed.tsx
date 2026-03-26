@@ -63,7 +63,6 @@ const MindPalEmbed = ({ slug, type, conversationId, workflowRunId }: MindPalEmbe
               tool_name: chatbotName || "Advanced Generalist AI Assistant",
               tool_type: "chatbot",
               run_id: cid,
-              is_deleted: false,
             }, { onConflict: "run_id" })
             .then(({ error }) => {
               if (error) console.error("Error saving real-time history:", error);
