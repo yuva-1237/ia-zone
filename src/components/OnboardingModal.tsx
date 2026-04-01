@@ -19,9 +19,9 @@ const OnboardingModal = () => {
     setLoading(true);
     try {
       await completeOnboarding(fullName.trim());
-      toast.success("Welcome to YUVA AI!");
+      toast.success(t("onboarding.welcome"));
     } catch {
-      toast.error("Failed to save profile");
+      toast.error(t("chat.error"));
     } finally {
       setLoading(false);
     }
@@ -44,7 +44,7 @@ const OnboardingModal = () => {
               id="onb-name"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              placeholder="Yuvathilagan"
+              placeholder={t("login.fullName")}
               required
               className="mt-1"
             />

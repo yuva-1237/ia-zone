@@ -30,8 +30,9 @@ const LoginPage = () => {
         toast.success("Welcome back!");
         navigate("/");
       }
-    } catch (err: any) {
-      toast.error(err.message || "Authentication failed");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Authentication failed";
+      toast.error(message);
     } finally {
       setLoading(false);
     }

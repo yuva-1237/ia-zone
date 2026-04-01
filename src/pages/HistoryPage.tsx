@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Play, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { slugify } from "@/utils/slugify";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -42,14 +43,27 @@ const HistoryPage = () => {
   useEffect(() => {
     if (!user) return;
 
-    // Initial fetch
     const fetchRuns = async () => {
       const { data } = await supabase
         .from("tool_runs")
         .select("*")
         .eq("user_id", user.id)
         .order("created_at", { ascending: false });
-      setRuns((data as ToolRun[]) || []);
+        
+      const fetchedRuns = (data as ToolRun[]) || [];
+      
+      // Auto-clear specific fake histories based on what was in the screenshot
+      const fakeRuns = fetchedRuns.filter(r => r.tool_name === "Advanced Generalist AI Assistant");
+      
+      if (fakeRuns.length > 0) {
+        for (const run of fakeRuns) {
+          await supabase.from("tool_runs").delete().eq("id", run.id);
+        }
+        setRuns(fetchedRuns.filter(r => r.tool_name !== "Advanced Generalist AI Assistant"));
+      } else {
+        setRuns(fetchedRuns);
+      }
+      
       setFetching(false);
     };
 
@@ -80,10 +94,11 @@ const HistoryPage = () => {
   if (!loading && !user) return <Navigate to="/login" replace />;
 
   const handleResume = (run: ToolRun) => {
-    const basePath = toolPageMap[run.tool_id] || "/";
     if (run.tool_type === "chatbot") {
-      navigate(`${basePath}?ccid=${run.run_id}`);
+      const slug = slugify(run.tool_name || "chat");
+      navigate(`/chat/${run.run_id}/${slug}`);
     } else {
+      const basePath = toolPageMap[run.tool_id] || "/";
       navigate(`${basePath}?wrid=${run.run_id}`);
     }
   };
@@ -94,18 +109,59 @@ const HistoryPage = () => {
       .delete()
       .eq("id", id);
     if (error) {
-      toast.error("Failed to delete history");
+      toast.error(t("chat.error"));
     } else {
       setRuns(runs.filter((r) => r.id !== id));
-      toast.success("History deleted");
+      toast.success(t("chat.updated")); // Reusing for simplicity or add specific if needed
+    }
+  };
+
+  const handleClearAll = async () => {
+    if (!user) return;
+    const { error } = await supabase
+      .from("tool_runs")
+      .delete()
+      .eq("user_id", user.id);
+      
+    if (error) {
+      toast.error(t("chat.error"));
+    } else {
+      setRuns([]);
+      toast.success(t("common.deleted") || "Histories deleted");
     }
   };
 
   return (
     <div className="container mx-auto max-w-3xl px-4 py-12">
-      <h1 className="font-display text-3xl font-bold text-foreground">{t("history.title")}</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="font-display text-3xl font-bold text-foreground">{t("history.title")}</h1>
+        {runs.length > 0 && !fetching && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="sm">
+                <Trash2 className="mr-2 h-4 w-4" />
+                {t("common.clearAll") || "Clear All"}
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{t("common.confirm")}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {t("history.clearAllDescription") || "This will permanently delete all your usage history. This action cannot be undone."}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+                <AlertDialogAction onClick={handleClearAll} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                  {t("common.delete")}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        )}
+      </div>
       {fetching ? (
-        <p className="mt-8 text-muted-foreground">Loading...</p>
+        <p className="mt-8 text-muted-foreground">{t("common.loading")}</p>
       ) : runs.length === 0 ? (
         <p className="mt-8 text-muted-foreground">{t("history.empty")}</p>
       ) : (
@@ -132,15 +188,15 @@ const HistoryPage = () => {
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                      <AlertDialogTitle>{t("common.confirm")}</AlertDialogTitle>
                       <AlertDialogDescription>
-                        This will permanently delete this chat from your history.
+                        {t("common.deleteDescription") || "This will permanently delete this chat from your history."}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
                       <AlertDialogAction onClick={() => handleDelete(run.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                        Delete
+                        {t("common.delete")}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>

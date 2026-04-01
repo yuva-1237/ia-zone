@@ -84,6 +84,14 @@
     --glass-bg: rgba(15, 15, 30, 0.75);
     --glass-border: rgba(255, 255, 255, 0.08);
   }
+
+  /* Fix for hardcoded black icons in dark mode */
+  .dark svg:not([fill="none"]) {
+    fill: currentColor;
+  }
+  .dark svg {
+    stroke: currentColor;
+  }
 }
 
 @layer base {

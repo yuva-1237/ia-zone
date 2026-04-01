@@ -18,16 +18,16 @@ const ProfilePage = () => {
   }, [profile]);
 
   if (!loading && !user) return <Navigate to="/login" replace />;
-  if (loading) return <div className="flex min-h-[50vh] items-center justify-center text-muted-foreground">Loading...</div>;
+  if (loading) return <div className="flex min-h-[50vh] items-center justify-center text-muted-foreground">{t("common.loading")}</div>;
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     try {
       await updateProfile({ full_name: fullName.trim() });
-      toast.success("Profile updated!");
+      toast.success(t("chat.updated"));
     } catch {
-      toast.error("Failed to update profile");
+      toast.error(t("chat.error"));
     } finally {
       setSaving(false);
     }
@@ -45,7 +45,7 @@ const ProfilePage = () => {
           <Label>{t("login.email")}</Label>
           <Input value={user?.email || ""} disabled className="mt-1" />
         </div>
-        <Button type="submit" disabled={saving}>{saving ? "..." : t("profile.save")}</Button>
+        <Button type="submit" disabled={saving}>{saving ? t("common.loading") : t("profile.save")}</Button>
       </form>
     </div>
   );

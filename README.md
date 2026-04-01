@@ -1,8 +1,8 @@
-# YUVA AI HUB
+# IA ZONE
 
 ## Overview
 
-**YUVA AI HUB** is a cutting-edge, futuristic platform designed to centralize and democratize access to advanced artificial Intelligence. It serves as a sophisticated gateway where users can interact with powerful AI assistants specifically tailored to supercharge learning, productivity, and creative workflows. Whether you're coding, researching, or brainstorming, YUVA AI HUB provides a premium, immersive environment to leverage state-of-the-art AI technology.
+**IA ZONE** is a cutting-edge, futuristic platform designed to centralize and democratize access to advanced artificial Intelligence. It serves as a sophisticated gateway where users can interact with powerful AI assistants specifically tailored to supercharge learning, productivity, and creative workflows. Whether you're coding, researching, or brainstorming, IA ZONE provides a premium, immersive environment to leverage state-of-the-art AI technology.
 
 The project was created to bridge the gap between complex AI models and end-users, offering a "one-stop-shop" experience with a focus on high-end aesthetics, seamless performance, and intuitive user interaction.
 
@@ -16,7 +16,7 @@ In the rapidly evolving AI landscape, users often face several challenges:
 
 ## Solution
 
-YUVA AI HUB solves these problems by providing:
+IA ZONE solves these problems by providing:
 - **Unified Interface**: A single, beautiful hub for multiple AI assistants (starting with an Advanced Generalist AI).
 - **Immersive UX**: A futuristic design featuring a 3D animated robot assistant, dark/light theme support, and smooth motion design.
 - **Simplified Workflow**: Pre-configured, high-performance AI tools ready for immediate use.
@@ -97,7 +97,7 @@ YUVA AI HUB solves these problems by providing:
 ## Project Structure
 
 ```text
-yuva-ai-hub/
+ia-zone/
 ├── public/              # Static assets (icons, images)
 ├── src/
 │   ├── components/      # Reusable UI components
@@ -135,8 +135,8 @@ yuva-ai-hub/
 ### Steps
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yuva-1237/yuva-ai-hub.git
-   cd yuva-ai-hub
+   git clone https://github.com/yuva-1237/ia-zone.git
+   cd ia-zone
    ```
 
 2. **Install dependencies**:
@@ -195,7 +195,7 @@ The `LanguageContext.tsx` provides a seamless way to manage translations across 
 
 ## Contributing
 
-We welcome contributions to YUVA AI HUB! Please follow these steps:
+We welcome contributions to IA ZONE! Please follow these steps:
 1. Fork the repository.
 2. Create a new branch (`git checkout -b feature/amazing-feature`).
 3. Commit your changes (`git commit -m 'Add amazing feature'`).

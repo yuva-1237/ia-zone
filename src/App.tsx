@@ -9,6 +9,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import Navbar from "@/components/Navbar";
 import OnboardingModal from "@/components/OnboardingModal";
 import Robot3D from "@/components/Robot3D";
+import ThemeAwareFloatingLines from "@/components/ThemeAwareFloatingLines";
 import Index from "./pages/Index";
 import LoginPage from "./pages/LoginPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -24,6 +25,7 @@ const AppContent = () => {
 
   return (
     <div className="relative min-h-screen">
+      <ThemeAwareFloatingLines />
       <Robot3D />
       <Navbar />
       {showOnboarding && <OnboardingModal />}
@@ -33,6 +35,8 @@ const AppContent = () => {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/history" element={<HistoryPage />} />
         <Route path="/tool/advanced-generalist-ai-assistant" element={<ChatbotPage />} />
+        <Route path="/chat/:ccid" element={<ChatbotPage />} />
+        <Route path="/chat/:ccid/:slug" element={<ChatbotPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </div>

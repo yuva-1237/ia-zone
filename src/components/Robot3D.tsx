@@ -1,6 +1,24 @@
-import { motion, useScroll, useTransform, useSpring } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring, MotionValue } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useTheme } from "@/contexts/ThemeContext";
+
+interface BotConfig {
+  id: string;
+  xRatio: number;
+  yFactor: number;
+  scale: number;
+  opacity: number;
+  top?: string;
+  bottom?: string;
+  left?: string;
+  right?: string;
+  lgRight?: string;
+  lgLeft?: string;
+  lgTop?: string;
+  rotate: number[];
+  duration: number;
+  grayscale: number;
+}
 
 export const RobotSVG = ({ isDark, className, style }: { isDark: boolean; className?: string; style?: React.CSSProperties }) => (
   <svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className={`drop-shadow-2xl ${className}`} style={style}>
@@ -53,9 +71,9 @@ export const RobotSVG = ({ isDark, className, style }: { isDark: boolean; classN
 );
 
 const RobotInstance = ({ bot, mousePos, yPos, isDark }: { 
-  bot: any; 
+  bot: BotConfig; 
   mousePos: { x: number; y: number }; 
-  yPos: any; 
+  yPos: MotionValue<number>; 
   isDark: boolean 
 }) => {
   const adjustedY = useTransform(yPos, (value: number) => value * bot.yFactor);
