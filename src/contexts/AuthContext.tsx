@@ -1,6 +1,23 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { User, Session } from "@supabase/supabase-js";
-import { supabase } from "@/integrations/supabase/client";
+import {
+  findUserByEmail,
+  findUserById,
+  createUser,
+  updateUser,
+  getSession,
+  setSession,
+  LocalUser,
+} from "@/lib/localDB";
+
+// ── Compatible type shapes ────────────────────────────────────────────────────
+export interface AppUser {
+  id: string;
+  email: string;
+}
+
+export interface AppSession {
+  user: AppUser;
+}
 
 interface Profile {
   id: string;
@@ -10,8 +27,8 @@ interface Profile {
 }
 
 interface AuthContextType {
-  user: User | null;
-  session: Session | null;
+  user: AppUser | null;
+  session: AppSession | null;
   profile: Profile | null;
   loading: boolean;
   signUp: (email: string, password: string, fullName: string) => Promise<void>;
@@ -22,94 +39,114 @@ interface AuthContextType {
   refreshProfile: () => Promise<void>;
 }
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+const toAppUser = (u: LocalUser): AppUser => ({ id: u.id, email: u.email });
+
+const toProfile = (u: LocalUser): Profile => ({
+  id: u.id,
+  user_id: u.id,
+  full_name: u.full_name,
+  onboarding_completed: u.onboarding_completed,
+});
+
+// ── Context ───────────────────────────────────────────────────────────────────
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const [user, setUser] = useState<AppUser | null>(null);
+  const [session, setSessionState] = useState<AppSession | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchProfile = async (userId: string) => {
-    const { data } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("user_id", userId)
-      .single();
-    setProfile(data as Profile | null);
-  };
-
+  // Restore session from localStorage on mount
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        if (session?.user) {
-          setTimeout(() => fetchProfile(session.user.id), 0);
-        } else {
-          setProfile(null);
-        }
-        setLoading(false);
+    const saved = getSession();
+    if (saved) {
+      const found = findUserById(saved.user_id);
+      if (found) {
+        const appUser = toAppUser(found);
+        setUser(appUser);
+        setSessionState({ user: appUser });
+        setProfile(toProfile(found));
+      } else {
+        setSession(null); // stale session
       }
-    );
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchProfile(session.user.id);
-      }
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    }
+    setLoading(false);
   }, []);
 
-  const signUp = async (email: string, password: string, fullName: string) => {
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { full_name: fullName }, emailRedirectTo: window.location.origin },
-    });
-    if (error) throw error;
+  const signUp = async (
+    email: string,
+    password: string,
+    fullName: string
+  ) => {
+    if (findUserByEmail(email)) {
+      throw new Error("An account with this email already exists.");
+    }
+    const newUser = createUser(email, password, fullName);
+    const appUser = toAppUser(newUser);
+    setSession({ user_id: newUser.id, email: newUser.email });
+    setUser(appUser);
+    setSessionState({ user: appUser });
+    setProfile(toProfile(newUser));
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    const found = findUserByEmail(email);
+    if (!found) throw new Error("No account found with this email.");
+    if (found.password !== password)
+      throw new Error("Incorrect password. Please try again.");
+    const appUser = toAppUser(found);
+    setSession({ user_id: found.id, email: found.email });
+    setUser(appUser);
+    setSessionState({ user: appUser });
+    setProfile(toProfile(found));
   };
 
   const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) throw error;
+    setSession(null);
+    setUser(null);
+    setSessionState(null);
+    setProfile(null);
   };
 
   const updateProfile = async (data: Partial<Pick<Profile, "full_name">>) => {
     if (!user) return;
-    const { error } = await supabase
-      .from("profiles")
-      .update(data)
-      .eq("user_id", user.id);
-    if (error) throw error;
-    await fetchProfile(user.id);
+    updateUser(user.id, data);
+    const updated = findUserById(user.id);
+    if (updated) setProfile(toProfile(updated));
   };
 
   const completeOnboarding = async (fullName: string) => {
     if (!user) return;
-    const { error } = await supabase
-      .from("profiles")
-      .update({ full_name: fullName, onboarding_completed: true })
-      .eq("user_id", user.id);
-    if (error) throw error;
-    await fetchProfile(user.id);
+    updateUser(user.id, { full_name: fullName, onboarding_completed: true });
+    const updated = findUserById(user.id);
+    if (updated) setProfile(toProfile(updated));
   };
 
   const refreshProfile = async () => {
-    if (user) await fetchProfile(user.id);
+    if (!user) return;
+    const found = findUserById(user.id);
+    if (found) setProfile(toProfile(found));
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, profile, loading, signUp, signIn, signOut, updateProfile, completeOnboarding, refreshProfile }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        session,
+        profile,
+        loading,
+        signUp,
+        signIn,
+        signOut,
+        updateProfile,
+        completeOnboarding,
+        refreshProfile,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

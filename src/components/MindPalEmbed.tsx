@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
-import { supabase } from "@/integrations/supabase/client";
+import { upsertToolRun, getToolRunByRunId } from "@/lib/localDB";
 import { slugify } from "@/utils/slugify";
 import { Share2 } from "lucide-react";
 import { toast } from "sonner";
@@ -37,8 +37,8 @@ const MindPalEmbed = ({ slug, type, conversationId, workflowRunId, onConversatio
   const { theme } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const initialConversationId = useRef(conversationId);
-  const initialWorkflowRunId = useRef(workflowRunId);
+  const [initialCid] = useState(conversationId);
+  const [initialWrid] = useState(workflowRunId);
 
   const domain = type === "chatbot" ? "chatbot.getmindpal.com" : "workflow.getmindpal.com";
   const idSuffix = type === "chatbot" ? "-chatbot" : "-workflow";
@@ -52,8 +52,8 @@ const MindPalEmbed = ({ slug, type, conversationId, workflowRunId, onConversatio
   }
   
   // Use the initial IDs to prevent iframe reloads when the parent syncs the IDs back down
-  const cidToUse = initialConversationId.current || conversationId;
-  const wridToUse = initialWorkflowRunId.current || workflowRunId;
+  const cidToUse = initialCid || conversationId;
+  const wridToUse = initialWrid || workflowRunId;
   
   if (cidToUse) url.searchParams.append("ccid", cidToUse);
   if (wridToUse) url.searchParams.append("wrid", wridToUse);
@@ -132,32 +132,19 @@ const MindPalEmbed = ({ slug, type, conversationId, workflowRunId, onConversatio
 
             const dynamicName = `${chatbotName || "Chat"} - ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
             
-            supabase
-              .from("tool_runs")
-              .select("tool_name")
-              .eq("run_id", cid)
-              .single()
-              .then(({ data }) => {
-                const shouldUpdateTitle = !data || data.tool_name === "Advanced Generalist AI Assistant" || data.tool_name === "Chatbot";
-                
-                const payload: any = {
-                  user_id: user.id,
-                  tool_id: chatbotId || "69c156f9877ca00f73732590",
-                  tool_type: "chatbot",
-                  run_id: cid,
-                };
+            const existing = getToolRunByRunId(cid);
+            const shouldUpdateTitle =
+              !existing ||
+              existing.tool_name === "Advanced Generalist AI Assistant" ||
+              existing.tool_name === "Chatbot";
 
-                if (shouldUpdateTitle) {
-                  payload.tool_name = dynamicName;
-                }
-
-                return supabase
-                  .from("tool_runs")
-                  .upsert(payload, { onConflict: "run_id" });
-              })
-              .then(({ error }) => {
-                if (error) console.error("Error saving real-time history:", error);
-              });
+            upsertToolRun({
+              user_id: user.id,
+              tool_id: chatbotId || "69c156f9877ca00f73732590",
+              tool_type: "chatbot",
+              run_id: cid,
+              ...(shouldUpdateTitle ? { tool_name: dynamicName } : {}),
+            });
           }
         }
       }
